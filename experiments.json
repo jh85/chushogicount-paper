@@ -1,0 +1,262 @@
+{
+  "flags": {
+    "argv": [
+      "python3",
+      "src/plan/flags.py",
+      "--n",
+      "100000000",
+      "--seed",
+      "171",
+      "--jcsa",
+      "--procs",
+      "8"
+    ],
+    "stdout": "out/runs/flags-seed171.log"
+  },
+  "lanes": {
+    "argv": [
+      "python3",
+      "src/plan/lanes.py",
+      "--n",
+      "10000000",
+      "--seed",
+      "173",
+      "--procs",
+      "8"
+    ],
+    "stdout": "out/runs/lanes-seed173.log"
+  },
+  "mf": {
+    "argv": [
+      "python3",
+      "src/plan/estimate.py",
+      "--seed",
+      "192",
+      "--nonterm",
+      "400000",
+      "--flags",
+      "40000",
+      "--term",
+      "24000",
+      "--flagsj",
+      "40000",
+      "--jcsa",
+      "--retries",
+      "6",
+      "--planner",
+      "cpp",
+      "--cascade",
+      "A,B,C,D",
+      "--fix-relax-turn",
+      "--wide-seeds",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "300",
+      "--tag",
+      "mf"
+    ],
+    "stdout": "out/runs/mf.log"
+  },
+  "me": {
+    "argv": [
+      "python3",
+      "src/plan/estimate.py",
+      "--seed",
+      "191",
+      "--nonterm",
+      "40000",
+      "--flags",
+      "1000",
+      "--term",
+      "600",
+      "--flagsj",
+      "1000",
+      "--jcsa",
+      "--retries",
+      "6",
+      "--procs",
+      "8",
+      "--tag",
+      "me"
+    ],
+    "stdout": "out/runs/me.log"
+  },
+  "me-followup": {
+    "argv": [
+      "python3",
+      "src/plan/followup.py",
+      "out/runs/me.jsonl",
+      "--out",
+      "out/runs/me-followup.jsonl",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "300"
+    ],
+    "stdout": "out/runs/me-followup.log"
+  },
+  "me-followup2": {
+    "argv": [
+      "python3",
+      "src/plan/followup.py",
+      "out/runs/me.jsonl",
+      "--out",
+      "out/runs/me-followup2.jsonl",
+      "--stages",
+      "C,D",
+      "--skip",
+      "out/runs/me-followup.jsonl",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "300"
+    ],
+    "stdout": "out/runs/me-followup2.log"
+  },
+  "d13-p2": {
+    "argv": [
+      "python3",
+      "src/jcsa/d13_pilot.py",
+      "out/runs/mf.jsonl",
+      "--n",
+      "1500",
+      "--offset",
+      "0",
+      "--pipeline",
+      "p2",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "50",
+      "--out",
+      "out/runs/d13-p2.jsonl"
+    ],
+    "stdout": "out/runs/d13-p2.log",
+    "env": {
+      "CHU_PLAN_D13_READING_A": "1"
+    }
+  },
+  "d13-p3": {
+    "argv": [
+      "python3",
+      "src/jcsa/d13_pilot.py",
+      "out/runs/mf.jsonl",
+      "--n",
+      "1500",
+      "--offset",
+      "1500",
+      "--pipeline",
+      "v2",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "50",
+      "--out",
+      "out/runs/d13-p3.jsonl"
+    ],
+    "stdout": "out/runs/d13-p3.log",
+    "env": {
+      "CHU_PLAN_D13_READING_A": "1"
+    }
+  },
+  "g13": {
+    "argv": [
+      "python3",
+      "src/jcsa/d13_pilot.py",
+      "out/runs/mf.jsonl",
+      "--n",
+      "40000",
+      "--offset",
+      "3000",
+      "--pipeline",
+      "v2",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "50",
+      "--out",
+      "out/runs/g13.jsonl"
+    ],
+    "stdout": "out/runs/g13.log",
+    "env": {
+      "CHU_PLAN_D13_READING_A": "1"
+    }
+  },
+  "g13b-seeds": {
+    "derive_seeds_from": "out/runs/g13.jsonl",
+    "output": "out/runs/g13b-redo.seeds"
+  },
+  "g13b": {
+    "argv": [
+      "python3",
+      "src/jcsa/d13_pilot.py",
+      "out/runs/mf.jsonl",
+      "--n",
+      "40000",
+      "--offset",
+      "3000",
+      "--pipeline",
+      "v2",
+      "--seeds",
+      "out/runs/g13b-redo.seeds",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "50",
+      "--out",
+      "out/runs/g13b.jsonl"
+    ],
+    "stdout": "out/runs/g13b.log"
+  },
+  "mf-certificates": {
+    "argv": [
+      "python3",
+      "src/jcsa/regen_certs.py",
+      "out/runs/mf.jsonl",
+      "--planner",
+      "cpp",
+      "--cascade",
+      "A,B,C,D",
+      "--fix-relax-turn",
+      "--procs",
+      "8",
+      "--maxtasks",
+      "300"
+    ],
+    "stdout": "out/runs/mf-certificates.log"
+  },
+  "mf-replay": {
+    "argv": [
+      "python3",
+      "src/jcsa/replay_native.py",
+      "out/runs/mf_certs.jsonl.gz",
+      "--procs",
+      "8"
+    ],
+    "stdout": "out/runs/mf-replay.log"
+  },
+  "bayes": {
+    "argv": [
+      "python3",
+      "src/plan/bayes.py",
+      "--records",
+      "out/runs/me.jsonl",
+      "--flags",
+      "out/runs/flags-seed171.log",
+      "--lanes",
+      "out/runs/lanes-seed173.log",
+      "--followup",
+      "out/runs/me-followup.jsonl",
+      "--followup",
+      "out/runs/me-followup2.jsonl",
+      "--n",
+      "400000",
+      "--seed",
+      "1",
+      "--csv",
+      "out/figures/fig3_bayes.csv"
+    ],
+    "stdout": "out/runs/bayes.log"
+  }
+}
