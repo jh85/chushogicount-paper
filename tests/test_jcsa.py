@@ -1,4 +1,5 @@
 """JCSA layer, smoke tests (JCSA worked examples pending: docs/jcsa-delta.md)."""
+import argparse
 import sys
 from pathlib import Path
 
@@ -58,13 +59,16 @@ def test_capture_on_flag_square():
     print("ok capture square: non-lion capturer takable; promoted kirin banned iff protected")
 
 
-def test_cases_json():
+DEFAULT_CASES = Path(__file__).resolve().parents[1] / "out" / "fixtures" / "jcsa" / "cases.json"
+
+
+def test_cases_json(path=DEFAULT_CASES):
     """Every recorded case keeps its engine verdict (lishogi) and, where the layer
     implements the rule, its JCSA verdict."""
     import json
     from plan.moves import usi_squares
     from count.sfen import parse
-    cases = json.load(open(Path(__file__).resolve().parents[1] / "out" / "fixtures" / "jcsa" / "cases.json"))
+    cases = json.loads(path.read_text())
     for c in cases:
         board, turn, flag = parse(c["sfen"])
         if c["move"] == "(status)":
@@ -92,5 +96,7 @@ if __name__ == "__main__":
     test_okazaki_unprotected_lion_capturable()
     test_protected_lion_banned()
     test_capture_on_flag_square()
-    test_cases_json()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
+    test_cases_json(parser.parse_args().cases)
     print("ok")

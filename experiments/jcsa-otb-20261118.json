@@ -1,0 +1,130 @@
+{
+  "purpose": "Production full JCSA over-the-board count including mate and royal capture, five cumulative looks, separate screen samples",
+  "benchmark_workers": [
+    24
+  ],
+  "minimum_speedup_for_more_workers": 1.05,
+  "budget_seconds": 180,
+  "tail_limit": 24,
+  "memory_limit_bytes": 51539607552,
+  "classifier_options": {
+    "_cache_approach": true,
+    "_repair_placement": true,
+    "_protect_files": true,
+    "_preserve_captures": true,
+    "_diverse_tails": true,
+    "_targeted_flag_search": true,
+    "_targeted_royal_search": true,
+    "_complete_flag_refutations": true,
+    "_profile": false,
+    "_file_order": null,
+    "_stages": [
+      {
+        "seconds": 20,
+        "options": {
+          "_cpp_first": true,
+          "_two_ply_first": false,
+          "_tail_relax": false,
+          "_relax_cages": false
+        }
+      },
+      {
+        "seconds": 40,
+        "options": {
+          "_cpp_first": false,
+          "_two_ply_first": true,
+          "_two_ply_witnesses": 1,
+          "_tail_relax": false,
+          "_relax_cages": false
+        }
+      },
+      {
+        "seconds": 120,
+        "options": {
+          "_cpp_first": false,
+          "_two_ply_first": true,
+          "_two_ply_witnesses": 1,
+          "_tail_relax": true,
+          "_relax_cages": true
+        }
+      }
+    ],
+    "_batch_native_verification": true,
+    "_deduplicate_cpp": true,
+    "_fresh_options": {
+      "seconds": {
+        "nonterm": 240,
+        "flagsj": 30,
+        "term": 30
+      },
+      "setups": 6,
+      "histories": 3,
+      "window_seconds": 28,
+      "helpers": 16,
+      "beam": 64,
+      "royal_staging": true,
+      "endangered_royals": true,
+      "rebuild_safe_suffix": true,
+      "promotion_detour_nodes": 50000,
+      "flag_approach_predecessors": 1,
+      "royal_capture_predecessors": 4,
+      "file_staging_seconds": 120,
+      "file_staging_setups": 6,
+      "single_piece_detour_nodes": 1000,
+      "mating_setup_approaches": 1,
+      "mating_approach_predecessors": 600,
+      "continuing_two_ply_setups": 1,
+      "closing_pawn_setups": 1
+    }
+  },
+  "expected_populations": {
+    "nonterm": "191268797913333891330065995553675691619019251307357645954773256654516618748808675984141439531875112036039910149901581282707122183444296145463470850340851034075349792",
+    "term": "1980652455929932338440020533783149804914160984693477930660462197612846617711822720340098312102549205699770822408956331542081038206237618818521412927374709499540192"
+  },
+  "static_flag_population": {
+    "successes": 1902733,
+    "draws": 98975310
+  },
+  "joint_alpha": 0.0027,
+  "fresh_resolver": true,
+  "binary_sources": {
+    "chu-plan": "src/plan/cpp/chu-plan",
+    "jcsa-native-audit": ".engines/jcsa-native-audit",
+    "jcsa-two-piece": ".engines/jcsa-two-piece"
+  },
+  "audit": {
+    "slow_per_stratum": 8,
+    "negative_seconds": 180,
+    "operational_one_sided_alpha": "0.0009"
+  },
+  "precision": {
+    "domains": {
+      "cheap_first": "JCSA-OTB-20261118-screen-A",
+      "cheap_extra": "JCSA-OTB-20261118-screen-B",
+      "full": "JCSA-OTB-20261118-full"
+    },
+    "full_N_looks": [
+      20000,
+      40000,
+      80000,
+      160000,
+      320000
+    ],
+    "cheap_N_looks": [
+      1000000,
+      4000000
+    ],
+    "flag_N": 40000,
+    "terminal_N": 24000,
+    "full_blocks": {
+      "nonterm": 2000,
+      "flagsj": 2000,
+      "term": 2000
+    },
+    "cheap_block": 4096,
+    "workers": 24,
+    "second_workers": 12,
+    "cheap_workers": 12,
+    "disk_reserve_bytes": 107374182400
+  }
+}

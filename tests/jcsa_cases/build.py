@@ -11,6 +11,7 @@ Usage: python3 tests/jcsa_cases/build.py   -> cases.json, README.md (ASCII board
 Diagram coordinates: JCSA file f (1 = rightmost) and rank r (1 = top, White's side)
 map to our (x, y) = (12 - f, 13 - r).
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -22,6 +23,9 @@ from plan.engine import Engine                                      # noqa: E402
 from plan.moves import ascii_board, usi, usi_sq, usi_squares         # noqa: E402
 from jcsa.mode import legal_moves as jcsa_legal                      # noqa: E402
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--corrected-lishogi", action="store_true", help="test the ea6f874 mid-step rule")
+args = parser.parse_args()
 ENG = Engine()
 IMG = "refs/rules/jcsa/original/www.chushogi-renmei.com/kouza/"
 
@@ -153,13 +157,17 @@ for cid, extra, lverdict, jverdict, desc in (
 
 # --- hit-and-run by an eagle (constructed; no JCSA diagram) ---
 b = dict(KINGS); b.update({(5, 8): ("W", "+D"), (4, 7): N, (3, 6): ("B", "G"), (10, 2): ("B", "R")})
-case("C05", "rule2007 七.四 (取り返す), spec.md §4 L3 quirk", "(constructed)", "L-4", "DIFFERENCE: during the ban (flag on 11k where a White lion was just taken), White's soaring eagle igui-captures the protected Black lion on its mid square: lishogi tests only the destination (allowed); JCSA bans every recapture of the lion",
-     b, "W", (10, 2), usi((5, 8), (5, 8), mid=(4, 7)), "legal", "illegal", "counter-strike", "the flag square holds the Black rook that took the lion")
-case("C05b", "rule2007 七.四", "(constructed)", "L-4", "DIFFERENCE: same, pass-through capture (eagle takes the lion on 4,7 and the gold on 3,6)",
-     b, "W", (10, 2), usi((5, 8), (3, 6), mid=(4, 7)), "legal", "illegal", "counter-strike")
+midstep = "illegal" if args.corrected_lishogi else "legal"
+case("C05", "rule2007 七.四 (取り返す)", "(constructed)", "L-4",
+     "During the ban White's soaring eagle takes the protected Black lion on the first step and returns.",
+     b, "W", (10, 2), usi((5, 8), (5, 8), mid=(4, 7)), midstep, "illegal", "counter-strike")
+case("C05b", "rule2007 七.四", "(constructed)", "L-4",
+     "The same eagle takes the protected lion on the first step and continues to take the gold.",
+     b, "W", (10, 2), usi((5, 8), (3, 6), mid=(4, 7)), midstep, "illegal", "counter-strike")
 b6 = dict(b); del b6[(3, 6)]
-case("C05c", "rule_hosoku2004 3.⑥", "(constructed)", "L-4, H-3.6", "same igui capture with the Black lion unprotected: lishogi still allows (destination test), JCSA allows (no foot, no sakishishi)",
-     b6, "W", (10, 2), usi((5, 8), (5, 8), mid=(4, 7)), "legal", "legal", "counter-strike")
+case("C05c", "rule_hosoku2004 3.⑥", "(constructed)", "L-4, H-3.6",
+     "The eagle returns after taking an unprotected lion. JCSA permits the capture under the foot condition.",
+     b6, "W", (10, 2), usi((5, 8), (5, 8), mid=(4, 7)), midstep, "legal", "counter-strike")
 
 # --- promotion rows ---
 b = dict(KINGS); b.update({(2, 11): ("B", "L")})
@@ -214,7 +222,7 @@ b = {(0, 12): K, (1, 12): ("B", "L"), (0, 11): ("B", "P"), (1, 11): ("B", "P"), 
 case("C16", "rule2007 (no stalemate clause); accepted chu shogi convention (D11)", "(constructed)", "E-7", "Black to move has no legal move (king a12 boxed in by its own dead lance and blocked pawns): lishogi: stalemate = loss; JCSA: not stated explicitly, the accepted convention is that the stalemated player loses (same)",
      b, "B", None, None, "stalemate", "stalemate", "status", "terminal under any reading; no count changes")
 
-out = ROOT / "out" / "fixtures" / "jcsa"
+out = ROOT / "out" / "fixtures" / ("jcsa-midstep" if args.corrected_lishogi else "jcsa")
 out.mkdir(parents=True, exist_ok=True)
 json.dump(cases, open(out / "cases.json", "w"), indent=1, ensure_ascii=False)
 with open(out / "README.md", "w") as f:

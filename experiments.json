@@ -1,4 +1,8 @@
 {
+  "jcsa-otb-20261122": {
+    "argv": ["python3", "scripts/verify_jcsa.py"],
+    "stdout": "out/runs/jcsa-otb-20261122.log"
+  },
   "flags": {
     "argv": [
       "python3",

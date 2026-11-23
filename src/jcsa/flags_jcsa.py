@@ -3,7 +3,7 @@ paired with the lishogi count on the same board.
 
 A flag state (board, ℓ) is effective iff the ban removes at least one legal Black
 move; two flags removing the same moves are one state (D3).  lishogi removes every
-capture of a lion by a non-lion on a square ≠ ℓ (destination only).  JCSA removes
+capture of a lion by a non-lion on a square ≠ ℓ on either step. JCSA removes
 such a capture (destination or mid square) only if the captured lion is protected
 (Okazaki rule).  The engine (flag cleared) lists the candidate captures; protection
 is an engine query (`jcsa.mode._protected`).
@@ -49,7 +49,9 @@ def effective_states_both(engine, board):
             prot[(s, a)] = _protected(engine, board, s, a)
     seen_l, seen_j = set(), set()
     for l in flags:
-        banned_l = frozenset(mv for mv, a, s, on_mid in caps if s != l and not on_mid)
+        # Every mid-step lion capture also has a direct capture on the same square.
+        # Including the mid-step moves preserves the historical partition into flag classes.
+        banned_l = frozenset(mv for mv, a, s, on_mid in caps if s != l)
         banned_j = frozenset(mv for mv, a, s, on_mid in caps if prot[(s, a)])      # capture square not exempt under JCSA
         if banned_l:
             seen_l.add(banned_l)

@@ -28,3 +28,22 @@ test: all
 	$(PYTHON) tests/test_variant_cpp.py --n 30 --depth 2
 
 .PHONY: all setup engine planner variants fixtures test
+
+# Optional replay of the November JCSA proof games using the historical engine.
+.PHONY: jcsa-audit-engine
+jcsa-audit-engine: setup
+	$(MAKE) -C src/jcsa/native_audit
+
+# Verify the amended lishogi rule alongside the v0.2.1 sampling fixtures.
+CORRECTED_REV := ea6f874e5cad3ba8ccaf08bd2268a0f4e5a5481d
+CORRECTED_DIR := out/engine-midstep
+.PHONY: test-sakishishi
+test-sakishishi: setup
+	@if ! test -d "$(CORRECTED_DIR)"; then \
+		git -C "$(ENGINE_DIR)" fetch --depth 1 origin "$(CORRECTED_REV)" && \
+		git -C "$(ENGINE_DIR)" worktree add --detach "$(abspath $(CORRECTED_DIR))" "$(CORRECTED_REV)"; \
+	fi
+	@test "$$(git -C "$(CORRECTED_DIR)" rev-parse HEAD)" = "$(CORRECTED_REV)"
+	$(MAKE) -C "$(CORRECTED_DIR)" chushogi-gen
+	CHU_ENGINE="$(abspath $(CORRECTED_DIR))/chushogi-gen" $(PYTHON) tests/jcsa_cases/build.py --corrected-lishogi
+	CHU_ENGINE="$(abspath $(CORRECTED_DIR))/chushogi-gen" $(PYTHON) tests/test_jcsa.py --cases out/fixtures/jcsa-midstep/cases.json

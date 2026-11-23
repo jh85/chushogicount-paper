@@ -4,7 +4,26 @@ Exact candidate counting, Rank/Unrank and sampling (`src/count`), proof-game
 planning, certification and statistical analysis (`src/plan`), JCSA move rules
 and checkmate-ending analysis (`src/jcsa`), reduced-game validation
 (`src/variant`), and an independent Lean counting/indexing project (`lean`).
-This code-only package excludes the manuscript, historical records and outputs.
+Git tracks the code and experiment settings. Versioned release assets supply the
+evidence for the final November JCSA estimate.
+
+## Final JCSA over-the-board estimate (November 2026)
+
+Including checkmate and capture of the last royal, the estimate is **3.87 × 10¹⁶⁴
+reachable positions with either side to move**. The simultaneous intervals are
+**[3.86576, 3.87110] × 10¹⁶⁴** for either side and **[1.93288, 1.93555] × 10¹⁶⁴**
+for Black to move. Only the either-side interval supports three significant digits.
+
+From a clean checkout, run the following command (Python 3.12+, standard library).
+It downloads and checks the tagged evidence, verifies the 384,000 full draws and
+four million screen decisions, and reproduces all five registered count intervals.
+
+```sh
+python3 scripts/verify_jcsa.py
+```
+
+[Methods, sample results and optional proof-game replay](docs/jcsa-20261122.md) ·
+[Cite this release](https://github.com/jh85/chushogicount-paper/releases/tag/jcsa-otb-20261122)
 
 ## Setup and checks
 
@@ -26,9 +45,28 @@ commit `1a941d5a7460bdc01de253eb3e5b80a598d1eb1a`. No private repository is need
 Programs, generated fixtures/tables, figures, records and certificates go under
 ignored `out/`. Keep any explicitly supplied output paths there as well.
 
-## Experiments and outputs
+### Lishogi counter-strike correction
 
-`experiments.json` retains the main/earlier run settings, static-sample seeds,
+`make test-sakishishi` builds corrected engine commit `ea6f874` in a separate
+checkout and checks the 31 rule cases. In C05 and C05b both rule sets forbid a
+soaring eagle from taking the protected lion on the first step. In C05c the
+lion is unprotected, so lishogi forbids the capture and JCSA permits it.
+The original sampling engine, v0.2.1, already enforced the JCSA mid-step rule.
+The corrected lishogi flag classes have the same weights, since every first-step
+lion capture also has a direct capture on that square. In the separate historical
+lishogi main-run audit, all 6,602 replies to active flags in the 503,180 archived
+games were legal single moves. The November JCSA estimate uses its own samples.
+[Engine correction and test cases](https://github.com/jh85/chushogi/commit/ea6f874e5cad3ba8ccaf08bd2268a0f4e5a5481d)
+
+## Historical October experiments and outputs
+
+October's JCSA move-rule comparison ended by royal capture. Its separate G13/G13b
+checkmate analysis bounded the full Black-to-move count at [1.87418, 1.94215] × 10¹⁶⁴.
+The November study directly sampled the flag and terminal contributions and supersedes
+that preliminary full interval. The October lishogi estimate and royal-capture
+comparison have their own targets.
+
+`experiments.json` retains the October main/earlier run settings, static-sample seeds,
 D13 pilot/run/re-analysis settings, follow-ups and Bayesian settings. For example:
 
 ```sh
@@ -59,7 +97,7 @@ redraw samples or load historical records. The estimator also retains the
 paper's fixed static calibration inputs. Registered/strict normal-input bounds
 are nominal; the supplementary Clopper–Pearson-only construction is distinct.
 These are current source algorithms with recorded run settings, not a promise
-of byte-identical historical reruns. Historical code snapshots and evidence
+of byte-identical historical reruns. The original October code snapshots and per-game evidence
 remain outside this repository. Record-based tests require explicit generated
 records/certificates; use each program's `--help` for those options.
 
@@ -94,9 +132,10 @@ Uniformity assumes a uniform integer input. These results do not verify Python
 execution, RNG correctness, full-game reachability or Monte Carlo coverage, and
 do not expand the manuscript's claims.
 
-Source provenance: counting project `e25a3b103bde184a37c9bf81b95ef7e5fa3db19b`
+The October code came from counting project `e25a3b103bde184a37c9bf81b95ef7e5fa3db19b`
 (clean tracked sources); the accompanying Lean project was untracked and is
-preserved here as proof source. Dependency pins are unchanged. See
+preserved here as proof source. The November production source and engine identifiers are recorded in the
+release freeze manifest. See
 [THIRD_PARTY.md](THIRD_PARTY.md) for provenance, dependency notices and the
 separate licensing clarification needed for the pinned Chushogi snapshot.
 
